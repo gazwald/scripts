@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -eou pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+source scripts/env
+
+echo "+++ Shellcheck +++"
+
+# shellcheck disable=SC2046
+docker run "${COMMON_RUN_ARGS[@]}" \
+           --mount "type=bind,src=${PWD},dst=/mnt" \
+           "${DOCKER_IMAGE_SHELLCHECK}" \
+           $(find ./scripts -type f)

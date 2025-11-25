@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -eou pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+source scripts/env
+
+./scripts/util/build app
+
+trap "./scripts/stop-app" EXIT
+
+echo '+++ Stack up +++'
+docker compose \
+       --file docker/docker-compose.yaml \
+       --project-directory "$(pwd)" \
+       up \
+       --force-recreate \
+       --remove-orphans

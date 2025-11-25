@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -eou pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+source scripts/env
+
+echo '+++ Stack down +++'
+docker compose \
+       --file docker/docker-compose.yaml \
+       --project-directory "$(pwd)" \
+       rm \
+       --stop \
+       --force

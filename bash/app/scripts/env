@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2034
+set -eou pipefail
+
+# Build and runtime app vars
+APP_NAME=$(uv version --output-format json | jq -r '.package_name')
+APP_VERSION=$(uv version --short)
+APP_DOMAIN='poppet.io'
+
+# TODO: If APP_DOMAIN == poppet...
+DOCKER_REGISTRY="registry.poppet.io/dockerhub"
+DOCKER_IMAGE_HADOLINT="$DOCKER_REGISTRY/hadolint/hadolint:latest"
+DOCKER_IMAGE_SHELLCHECK="$DOCKER_REGISTRY/koalaman/shellcheck:stable"
+
+COMMON_RUN_ARGS=(
+  --rm
+  --interactive
+)
+COMMON_RUN_UTIL_ARGS=(
+  --tty
+  --mount "type=bind,src=${PWD},dst=${PWD}"
+  --mount "type=volume,src=${APP_NAME}-tools-venv,dst=${PWD}/.venv"
+  --workdir "${PWD}"
+)
+
+# Helper arrays
+COMMON_BUILD_ARGS=(
+  .
+)

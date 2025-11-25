@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -eou pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+source scripts/env
+
+CONTAINER=$1
+DYNAMIC_BUILD_ARGS=(
+  --tag "${DOCKER_REGISTRY}/${APP_NAME}-${CONTAINER}:latest"
+)
+ECHO_CONTAINER="true"
+
+case $CONTAINER in
+  app)
+    DYNAMIC_BUILD_ARGS+=(
+      --target "app"
+      --file "docker/Dockerfile"
+      --tag "${DOCKER_REGISTRY}/${APP_NAME}-${CONTAINER}:${APP_VERSION}"
+    )
+    ;;
+  tools)
+    DYNAMIC_BUILD_ARGS+=(
+      --file "docker/Dockerfile.tools"
+    )
+    ECHO_CONTAINER="false"
+    ;;
+
+  *)
+    echo "$CONTAINER is unknown?"
+    exit 1
+esac
+
+if [[ ${ECHO_CONTAINER} = "true" ]]; then
+  echo "+++ Building $CONTAINER +++"
+fi
+
+docker build "${DYNAMIC_BUILD_ARGS[@]}" \
+             "${COMMON_BUILD_ARGS[@]}"
