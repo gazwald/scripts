@@ -83,7 +83,7 @@ class DataclassWithIO:
         elif field_type and you_are_my_type(field_type) and isinstance(data, dict):
             return field_type.from_dict(data)
 
-        return None
+        return data
 
     @classmethod
     def from_dict(cls, data: dict) -> Self | None:
